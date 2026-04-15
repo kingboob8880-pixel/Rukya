@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>База пациентов — Абу Мухаммад</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f7f5;
+    --bg2: #ffffff;
+    --bg3: #f0efe9;
+    --text: #1a1a18;
+    --text2: #6b6b65;
+    --text3: #9b9b94;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.18);
+    --purple: #7F77DD;
+    --purple-bg: #EEEDFE;
+    --purple-txt: #3C3489;
+    --radius: 12px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--bg2);
+    border-bottom: 0.5px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header-icon {
+    width: 36px; height: 36px;
+    background: var(--purple-bg);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .header-icon svg { width: 18px; height: 18px; fill: none; stroke: var(--purple); stroke-width: 1.8; }
+  .header-title { font-size: 16px; font-weight: 600; }
+  .header-sub { font-size: 12px; color: var(--text2); }
+  .header-version {
+    margin-left: auto;
+    font-size: 11px;
+    background: var(--purple-bg);
+    color: var(--purple-txt);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 780px; margin: 0 auto; padding: 20px 16px; }
+
+  /* ── STATS ── */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+  .stat-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    text-align: center;
+  }
+  .stat-n { font-size: 22px; font-weight: 600; }
+  .stat-n.purple { color: var(--purple); }
+  .stat-l { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* ── CONTROLS ── */
+  .controls {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .search-row { display: flex; gap: 8px; }
+  .search-input {
+    flex: 1;
+    height: 38px;
+    border: 0.5px solid var(--border2);
+    border-radius: 9px;
+    padding: 0 14px;
+    font-size: 14px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color .15s;
+  }
+  .search-input:focus { border-color: var(--purple); }
+  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-btn {
+    height: 32px;
+    padding: 0 14px;
+    border: 0.5px solid var(--border2);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text2);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .filter-btn:hover { background: var(--bg3); }
+  .filter-btn.active { background: var(--purple-bg); color: var(--purple-txt); border-color: #AFA9EC; font-weight: 500; }
+
+  /* ── GROUP ── */
+  .group { margin-bottom: 12px; }
+  .group-header {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius) var(--radius) 0 0;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    transition: background .15s;
+  }
+  .group-header:hover { background: var(--bg3); }
+  .group-header.collapsed { border-radius: var(--radius); }
+  .group-name { font-size: 14px; font-weight: 600; flex: 1; }
+  .group-city { font-size: 12px; color: var(--text2); }
+  .group-right { display: flex; align-items: center; gap: 8px; }
+  .group-avg { font-size: 13px; font-weight: 600; color: var(--purple); }
+  .group-count {
+    font-size: 11px;
+    background: #E6F1FB;
+    color: #0C447C;
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .chevron {
+    width: 16px; height: 16px;
+    color: var(--text3);
+    transition: transform .2s;
+    flex-shrink: 0;
+  }
+  .chevron.open { transform: rotate(90deg); }
+
+  .group-body {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    overflow: hidden;
+  }
+
+  /* ── PATIENT ROW ── */
+  .patient-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-bottom: 0.5px solid var(--border);
+    cursor: pointer;
+    transition: background .12s;
+  }
+  .patient-row:last-child { border-bottom: none; }
+  .patient-row:hover { background: var(--bg3); }
+  .patient-row.selected { background: var(--purple-bg); }
+
+  .p-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .p-info { flex: 1; min-width: 0; }
+  .p-name { font-size: 14px; font-weight: 500; }
+  .p-meta { font-size: 11px; color: var(--text2); margin-top: 1px; }
+  .p-type-badge {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+  .p-progress {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .p-bar {
+    width: 56px; height: 5px;
+    background: var(--bg3);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .p-bar-fill { height: 100%; border-radius: 3px; }
+  .p-pct { font-size: 12px; font-weight: 600; min-width: 32px; text-align: right; }
+
+  /* ── DETAIL PANEL ── */
+  .detail-panel {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .detail-head {
+    background: var(--bg3);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .detail-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .detail-name { font-size: 15px; font-weight: 600; }
+  .detail-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .detail-close {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text2);
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 7px;
+    border: 0.5px solid var(--border2);
+    background: var(--bg2);
+    transition: background .12s;
+    white-space: nowrap;
+  }
+  .detail-close:hover { background: var(--bg3); }
+
+  .detail-tabs {
+    display: flex;
+    border-bottom: 0.5px solid var(--border);
+    background: var(--bg2);
+  }
+  .detail-tab {
+    padding: 9px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text2);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -0.5px;
+    transition: color .15s;
+    user-select: none;
+  }
+  .detail-tab:hover { color: var(--text); }
+  .detail-tab.active { color: var(--purple); border-color: var(--purple); font-weight: 500; }
+
+  .detail-body { padding: 14px 16px; }
+
+  .field-row {
+    display: flex;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 13px;
+  }
+  .field-row:last-child { border: none; }
+  .field-label { color: var(--text2); min-width: 100px; flex-shrink: 0; }
+  .field-val { color: var(--text); }
+
+  .ruqya-block {
+    background: var(--purple-bg);
+    border-radius: 8px;
+    padding: 10px 13px;
+    margin: 6px 0;
+  }
+  .ruqya-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--purple-txt);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 4px;
+  }
+  .ruqya-desc { font-size: 13px; color: var(--text); }
+
+  .note-block {
+    background: #FAEEDA;
+    border-radius: 8px;
+    padding: 9px 13px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #633806;
+    line-height: 1.6;
+  }
+
+  .progress-big {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0 16px;
+  }
+  .progress-big-bar {
+    flex: 1;
+    height: 10px;
+    background: var(--bg3);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .progress-big-fill { height: 100%; border-radius: 5px; }
+  .progress-pct { font-size: 20px; font-weight: 600; min-width: 50px; text-align: right; }
+
+  /* ── STATUS BADGE ── */
+  .status-done { font-size: 11px; background: #EAF3DE; color: #27500A; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+  .status-active { font-size: 11px; background: #E6F1FB; color: #0C447C; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+
+  /* ── EMPTY ── */
+  .empty { text-align: center; padding: 40px 20px; color: var(--text2); font-size: 14px; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 520px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .p-bar { width: 40px; }
+    .header-version { display: none; }
+    .field-label { min-width: 80px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">
+    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+  </div>
+  <div>
+    <div class="header-title">База пациентов</div>
+    <div class="header-sub">Абу Мухаммад · Интенсивное лечение v6.0</div>
+  </div>
+  <div class="header-version">v6.0</div>
+</div>
+
+<div class="container">
+  <div class="stats">
+    <div class="stat-card"><div class="stat-n" id="s-total">—</div><div class="stat-l">пациентов</div></div>
+    <div class="stat-card"><div class="stat-n" id="s-groups">—</div><div class="stat-l">групп</div></div>
+    <div class="stat-card"><div class="stat-n" id="s-active">—</div><div class="stat-l">активных</div></div>
+    <div class="stat-card"><div class="stat-n purple" id="s-avg">—</div><div class="stat-l">средний %</div></div>
+  </div>
+
+  <div class="controls">
+    <div class="search-row">
+      <input class="search-input" type="text" id="search" placeholder="Поиск по имени пациента...">
+    </div>
+    <div class="filter-row" id="filter-row">
+      <button class="filter-btn active" data-f="all">Все</button>
+      <button class="filter-btn" data-f="сихр">Сихр</button>
+      <button class="filter-btn" data-f="джинн">Джинн</button>
+      <button class="filter-btn" data-f="сглаз">Сглаз</button>
+      <button class="filter-btn" data-f="зависть">Зависть</button>
+      <button class="filter-btn" data-f="active">Активные</button>
+      <button class="filter-btn" data-f="done">Завершённые</button>
+    </div>
+  </div>
+
+  <div id="detail-container"></div>
+  <div id="list-container"></div>
+</div>
+
+<script>
+const COLORS = {
+  сихр:    { bg: '#FAECE7', txt: '#993C1D' },
+  джинн:   { bg: '#EEEDFE', txt: '#3C3489' },
+  сглаз:   { bg: '#FAEEDA', txt: '#854F0B' },
+  зависть: { bg: '#FBEAF0', txt: '#993556' }
+};
+const AV_COLORS = [
+  { bg: '#FAECE7', txt: '#993C1D' },
+  { bg: '#EEEDFE', txt: '#534AB7' },
+  { bg: '#FAEEDA', txt: '#854F0B' },
+  { bg: '#FBEAF0', txt: '#993556' },
+  { bg: '#E6F1FB', txt: '#185FA5' },
+  { bg: '#EAF3DE', txt: '#3B6D11' },
+  { bg: '#E1F5EE', txt: '#0F6E56' },
+  { bg: '#FCEBEB', txt: '#A32D2D' }
+];
+
+let db = null;
+let filterType = 'all';
+let searchQ = '';
+let openId = null;
+let detailTab = 'diag';
+let collapsed = {};
+let avMap = {};
+let avIdx = 0;
+
+function getAv(id) {
+  if (!avMap[id]) { avMap[id] = AV_COLORS[avIdx % AV_COLORS.length]; avIdx++; }
+  return avMap[id];
+}
+
+function progColor(p) {
+  if (p >= 80) return '#1D9E75';
+  if (p >= 50) return '#7F77DD';
+  return '#D85A30';
+}
+
+function filteredGroups() {
+  if (!db) return [];
+  return db.groups.map(g => ({
+    ...g,
+    patients: g.patients.filter(p => {
+      if (filterType === 'active') return p.status === 'active';
+      if (filterType === 'done') return p.status === 'done';
+      if (filterType !== 'all' && p.type !== filterType) return false;
+      if (searchQ && !p.name.toLowerCase().includes(searchQ)) return false;
+      return true;
+    })
+  })).filter(g => g.patients.length > 0);
+}
+
+function updateStats() {
+  const groups = filteredGroups();
+  const all = groups.flatMap(g => g.patients);
+  const active = all.filter(p => p.status === 'active').length;
+  const avg = all.length ? Math.round(all.reduce((a, p) => a + p.progress, 0) / all.length) : 0;
+  document.getElementById('s-total').textContent = all.length;
+  document.getElementById('s-groups').textContent = groups.length;
+  document.getElementById('s-active').textContent = active;
+  document.getElementById('s-avg').textContent = avg + '%';
+}
+
+function renderDetail() {
+  const el = document.getElementById('detail-container');
+  if (!openId || !db) { el.innerHTML = ''; return; }
+  const pt = db.groups.flatMap(g => g.patients).find(p => p.id === openId);
+  if (!pt) { el.innerHTML = ''; return; }
+
+  const av = getAv(pt.id);
+  const tc = COLORS[pt.type] || { bg: '#F1EFE8', txt: '#444441' };
+  const pc = progColor(pt.progress);
+
+  const tabs = [
+    { id: 'diag', label: 'Диагноз' },
+    { id: 'treat', label: 'Лечение' },
+    { id: 'prog', label: 'Прогресс' }
+  ];
+  const tabsHtml = tabs.map(t =>
+    `<div class="detail-tab${detailTab === t.id ? ' active' : ''}" onclick="setTab('${t.id}')">${t.label}</div>`
+  ).join('');
+
+  let body = '';
+  if (detailTab === 'diag') {
+    body = `
+      <div class="field-row"><span class="field-label">Тип недуга</span><span class="field-val">${pt.type}</span></div>
+      <div class="field-row"><span class="field-label">Место боли</span><span class="field-val">${pt.pain}</span></div>
+      <div class="field-row"><span class="field-label">Источник</span><span class="field-val">${pt.source}</span></div>
+      <div class="field-row"><span class="field-label">Дом</span><span class="field-val">${pt.home}</span></div>
+      <div class="field-row"><span class="field-label">Город</span><span class="field-val">${pt.city}</span></div>
+      <div class="field-row"><span class="field-label">Дата начала</span><span class="field-val">${pt.date}</span></div>
+    `;
+  } else if (detailTab === 'treat') {
+    body = pt.treatment.map(t => `
+      <div class="ruqya-block">
+        <div class="ruqya-title">${t.title}</div>
+        <div class="ruqya-desc">${t.desc}</div>
+      </div>
+    `).join('');
+    if (pt.note) body += `<div class="note-block">${pt.note}</div>`;
+  } else {
+    const statusHtml = pt.status === 'done'
+      ? '<span class="status-done">Завершено</span>'
+      : '<span class="status-active">Активное лечение</span>';
+    body = `
+      <div class="progress-big">
+        <div class="progress-big-bar">
+          <div class="progress-big-fill" style="width:${pt.progress}%;background:${pc}"></div>
+        </div>
+        <span class="progress-pct" style="color:${pc}">${pt.progress}%</span>
+      </div>
+      <div class="field-row"><span class="field-label">Статус</span><span class="field-val">${statusHtml}</span></div>
+      <div class="field-row"><span class="field-label">Возраст</span><span class="field-val">${pt.age} лет</span></div>
+      <div class="field-row"><span class="field-label">Дата начала</span><span class="field-val">${pt.date}</span></div>
+    `;
+  }
+
+  el.innerHTML = `
+    <div class="detail-panel">
+      <div class="detail-head">
+        <div class="detail-avatar" style="background:${av.bg};color:${av.txt}">${pt.initials}</div>
+        <div>
+          <div class="detail-name">${pt.name}</div>
+          <div class="detail-sub">${pt.age} лет · ${pt.city} · <span style="background:${tc.bg};color:${tc.txt};padding:1px 7px;border-radius:8px;font-size:11px;font-weight:500">${pt.type}</span></div>
+        </div>
+        <div class="detail-close" onclick="closeDetail()">✕ закрыть</div>
+      </div>
+      <div class="detail-tabs">${tabsHtml}</div>
+      <div class="detail-body">${body}</div>
+    </div>
+  `;
+}
+
+function renderList() {
+  const el = document.getElementById('list-container');
+  const groups = filteredGroups();
+  if (!groups.length) {
+    el.innerHTML = '<div class="empty">Пациентов не найдено</div>';
+    return;
+  }
+  el.innerHTML = groups.map(g => {
+    const avgG = Math.round(g.patients.reduce((a, p) => a + p.progress, 0) / g.patients.length);
+    const isOpen = !collapsed[g.id];
+    const rows = g.patients.map(p => {
+      const av = getAv(p.id);
+      const tc = COLORS[p.type] || { bg: '#F1EFE8', txt: '#444441' };
+      const pc = progColor(p.progress);
+      const sel = openId === p.id ? ' selected' : '';
+      return `
+        <div class="patient-row${sel}" onclick="openDetail('${p.id}')">
+          <div class="p-avatar" style="background:${av.bg};color:${av.txt}">${p.initials}</div>
+          <div class="p-info">
+            <div class="p-name">${p.name}</div>
+            <div class="p-meta">${p.age} лет · ${p.city} · ${p.date}</div>
+          </div>
+          <span class="p-type-badge" style="background:${tc.bg};color:${tc.txt}">${p.type}</span>
+          <div class="p-progress">
+            <div class="p-bar"><div class="p-bar-fill" style="width:${p.progress}%;background:${pc}"></div></div>
+            <span class="p-pct" style="color:${pc}">${p.progress}%</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="group">
+        <div class="group-header${isOpen ? '' : ' collapsed'}" onclick="toggleGroup('${g.id}')">
+          <div>
+            <div class="group-name">${g.name}</div>
+            ${g.city ? `<div class="group-city">${g.city}</div>` : ''}
+          </div>
+          <div class="group-right">
+            <span class="group-avg">${avgG}%</span>
+            <span class="group-count">${g.patients.length} чел.</span>
+            <svg class="chevron${isOpen ? ' open' : ''}" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 4l4 4-4 4"/></svg>
+          </div>
+        </div>
+        ${isOpen ? `<div class="group-body">${rows}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function render() {
+  updateStats();
+  renderDetail();
+  renderList();
+}
+
+function openDetail(id) {
+  openId = (openId === id) ? null : id;
+  detailTab = 'diag';
+  render();
+  if (openId) {
+    setTimeout(() => {
+      document.getElementById('detail-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  }
+}
+
+function closeDetail() { openId = null; render(); }
+function setTab(t) { detailTab = t; renderDetail(); }
+function toggleGroup(id) { collapsed[id] = !collapsed[id]; renderList(); }
+
+document.getElementById('search').addEventListener('input', e => {
+  searchQ = e.target.value.toLowerCase().trim();
+  render();
+});
+
+document.getElementById('filter-row').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  filterType = btn.dataset.f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+});
+
+// ── Load data ──
+fetch('patients.json')
+  .then(r => r.json())
+  .then(data => {
+    db = data;
+    render();
+  })
+  .catch(() => {
+    document.getElementById('list-container').innerHTML =
+      '<div class="empty">Не удалось загрузить patients.json.<br>Убедитесь, что файл находится в той же папке.</div>';
+  });
+</script>
+</body>
+</html>
