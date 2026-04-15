@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Абдуллах — Лечение</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0f0e0c;--ink2:#3a3830;--ink3:#7a776e;--ink4:#b8b4aa;--paper:#faf9f6;--paper2:#f2f0eb;--paper3:#e8e5de;--gold:#c9a84c;--gold2:#e8c96a;--gold-bg:#fdf8ee;--purple:#4a3fa0;--purple-l:#ede9fc;--green:#1a7a58;--green-l:#e8f5f0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;padding-bottom:50px}
+.topbar{background:var(--ink);padding:0 18px;height:54px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+.back{font-size:12px;color:var(--ink4);cursor:pointer;display:flex;align-items:center;gap:4px;text-decoration:none;transition:color .15s}
+.back:hover{color:var(--gold2)}
+.topbar-brand{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold2);font-weight:500;flex:1}
+.status-pill{font-size:11px;padding:3px 11px;border-radius:20px;background:#e8eefe;color:#3730a3}
+.hero{background:#fff;border-bottom:1px solid var(--paper3);padding:22px 18px;display:flex;align-items:flex-start;gap:16px}
+.av{width:56px;height:56px;border-radius:50%;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#FAECE7;color:#993C1D;font-family:'DM Sans',sans-serif}
+.hero-name{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;line-height:1.1}
+.hero-sub{font-size:12px;color:var(--ink3);margin-top:4px}
+.badges{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.badge{font-size:11px;padding:3px 11px;border-radius:20px}
+.prog-wrap{background:#fff;margin:14px 16px 0;border-radius:12px;border:1px solid var(--paper3);padding:16px}
+.prog-label{font-size:11px;font-weight:500;color:var(--ink3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px}
+.prog-row{display:flex;align-items:center;gap:12px}
+.prog-bar{flex:1;height:7px;background:var(--paper3);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;background:#b83a3a;width:30%}
+.prog-pct{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;color:#b83a3a;min-width:50px;text-align:right}
+.tabs{display:flex;margin:14px 16px 0;background:#fff;border:1px solid var(--paper3);border-radius:12px;overflow:hidden}
+.tab{flex:1;padding:11px 6px;font-size:13px;text-align:center;cursor:pointer;color:var(--ink3);border-bottom:2px solid transparent;user-select:none;transition:all .15s}
+.tab.on{color:var(--purple);border-color:var(--purple);background:var(--paper);font-weight:500}
+.sec{background:#fff;margin:10px 16px 0;border-radius:12px;border:1px solid var(--paper3);overflow:hidden}
+.sec.hidden{display:none}
+.sec-head{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);padding:12px 16px 4px}
+.frow{display:flex;gap:10px;padding:9px 16px;border-bottom:1px solid var(--paper2);font-size:13px;line-height:1.5}
+.frow:last-child{border:none}
+.flbl{color:var(--ink3);min-width:90px;flex-shrink:0;font-size:12px}
+.r-item{padding:12px 16px;border-bottom:1px solid var(--paper2)}
+.r-item:last-child{border:none}
+.r-num{font-size:10px;font-weight:500;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.r-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;margin-bottom:4px}
+.r-desc{font-size:13px;color:var(--ink2);line-height:1.65}
+.note-box{margin:10px 16px 0;background:var(--gold-bg);border:1px solid #e8d89a;border-radius:12px;padding:14px 16px;font-size:13px;color:#6b5500;line-height:1.7}
+.note-box.hidden{display:none}
+.prog-hist .frow:first-child .flbl{color:var(--purple);font-weight:500}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="back" href="index.html">← назад</a>
+  <div class="topbar-brand">Рукья</div>
+  <div class="status-pill">Активное лечение</div>
+</div>
+<div class="hero">
+  <div class="av">А</div>
+  <div>
+    <div class="hero-name">Абдуллах</div>
+    <div class="hero-sub">23 лет · Ташкент · Индивидуальные</div>
+    <div class="badges">
+      <span class="badge" style="background:#FAECE7;color:#712B13">Сихр</span>
+      <span class="badge" style="background:#e8eefe;color:#3730a3">Активное лечение</span>
+    </div>
+  </div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label">Прогресс исцеления</div>
+  <div class="prog-row">
+    <div class="prog-bar"><div class="prog-fill"></div></div>
+    <div class="prog-pct">30%</div>
+  </div>
+</div>
+<div class="tabs">
+  <div class="tab on" onclick="showTab('diag',this)">Диагноз</div>
+  <div class="tab" onclick="showTab('treat',this)">Лечение</div>
+  <div class="tab" onclick="showTab('prog',this)">Прогресс</div>
+</div>
+<div class="sec" id="sec-diag">
+  <div class="sec-head">О болезни</div>
+  <div class="frow"><span class="flbl">Тип</span><span>Сихр</span></div>
+  <div class="frow"><span class="flbl">Место боли</span><span>Желудок болит</span></div>
+  <div class="frow"><span class="flbl">Источник</span><span>Сьеденный сихр</span></div>
+  <div class="frow"><span class="flbl">Дом</span><span>Драки</span></div>
+  <div class="frow"><span class="flbl">Составлено</span><span>15 апреля 2026 г.</span></div>
+</div>
+<div class="sec hidden" id="sec-treat">
+  <div class="sec-head">Назначенное лечение</div>
+  
+            <div class="r-item">
+              <div class="r-num">Заклинание 1</div>
+              <div class="r-title">Сура аль бакара</div>
+              <div class="r-desc">Читать постоянно</div>
+            </div>
+            <div class="r-item">
+              <div class="r-num">Заклинание 2</div>
+              <div class="r-title">Аят аль курси</div>
+              <div class="r-desc"></div>
+            </div>
+</div>
+
+<div class="sec hidden" id="sec-prog">
+  <div class="sec-head">Прогресс</div>
+  <div class="frow prog-hist"><span class="flbl">15 апреля 2026 г.</span><span>Текущий прогресс — 30%</span></div>
+  <div class="frow"><span class="flbl">Статус</span><span>Активное лечение</span></div>
+</div>
+<script>
+function showTab(n,btn){
+  document.querySelectorAll(".sec").forEach(s=>s.classList.add("hidden"));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("on"));
+  document.getElementById("sec-"+n).classList.remove("hidden");
+  btn.classList.add("on");
+  const nb=document.getElementById("note-box")||document.querySelector(".note-box");
+  if(nb)nb.classList.toggle("hidden",n!=="treat");
+}
+</script>
+</body>
+</html>
